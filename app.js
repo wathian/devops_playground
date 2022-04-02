@@ -1,7 +1,7 @@
 var express = require('express')
 var app = express()
 
-var mysql = require('mysql')
+var mysql = require('mysql2')
 
 /**
  * This middleware provides a consistent API 
@@ -26,7 +26,7 @@ var dbOptions = {
  * pool: Creates pool of connections. Connection is auto release when response ends.
  * request: Creates new connection per new request. Connection is auto close when response ends.
  */ 
-app.use(myConnection(mysql, dbOptions, 'pool'))
+app.use(myConnection(mysql, dbOptions, 'single'))
 
 /**
  * setting up the templating view engine
@@ -109,6 +109,8 @@ app.use(flash())
 app.use('/', index)
 app.use('/users', users)
 
-app.listen(3000, function(){
-	console.log('Server running at port 3000: http://127.0.0.1:3000')
+var host = config.server.host
+var port = config.server.port
+app.listen(config.server.port, function(){
+	console.log('Server running at: %s:%s', host, port)
 })

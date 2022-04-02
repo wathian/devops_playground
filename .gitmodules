@@ -1,0 +1,3 @@
+[submodule "infra/modules/terraform-aws-alb-web-containers"]
+	path = infra/modules/terraform-aws-alb-web-containers
+	url = https://github.com/trussworks/terraform-aws-alb-web-containers
