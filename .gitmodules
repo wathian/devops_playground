@@ -1,3 +1,15 @@
 [submodule "infra/modules/terraform-aws-alb-web-containers"]
 	path = infra/modules/terraform-aws-alb-web-containers
 	url = https://github.com/trussworks/terraform-aws-alb-web-containers
+[submodule "infra/modules/terraform-aws-vpc"]
+	path = infra/modules/terraform-aws-vpc
+	url = https://github.com/cloudposse/terraform-aws-vpc
+[submodule "infra/modules/terraform-aws-dynamic-subnets"]
+	path = infra/modules/terraform-aws-dynamic-subnets
+	url = https://github.com/cloudposse/terraform-aws-dynamic-subnets
+[submodule "infra/modules/terraform-aws-ec2-instance"]
+	path = infra/modules/terraform-aws-ec2-instance
+	url = https://github.com/cloudposse/terraform-aws-ec2-instance
+[submodule "infra/modules/terraform-aws-key-pair"]
+	path = infra/modules/terraform-aws-key-pair
+	url = https://github.com/cloudposse/terraform-aws-key-pair
