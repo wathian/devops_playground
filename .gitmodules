@@ -16,3 +16,6 @@
 [submodule "infra/modules/terraform-aws-rds"]
 	path = infra/modules/terraform-aws-rds
 	url = https://github.com/cloudposse/terraform-aws-rds
+[submodule "infra/modules/terraform-aws-security-group"]
+	path = infra/modules/terraform-aws-security-group
+	url = https://github.com/cloudposse/terraform-aws-security-group
