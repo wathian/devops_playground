@@ -1,6 +1,6 @@
-CREATE database app;
+CREATE DATABASE IF NOT EXISTS app;
 
-use app;
+USE app;
 
 CREATE TABLE
     users (
@@ -10,3 +10,4 @@ CREATE TABLE
         email VARCHAR(100) NOT NULL,
         PRIMARY KEY (id)
     );
+
