@@ -1,6 +1,7 @@
-name: Deploy NodeJS
+name: Symbiosis Application Deployment
 
-on:
+on: 
+  workflow_dispatch: 
   push:
     branches: [ master ]
   pull_request:
@@ -13,7 +14,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: SSH into Symbiosis EC2 Instance
+    - name: SSH into EC2 Instance
       env: 
         AWS_EC2_HOST_NAME: ${{ secrets.AWS_EC2_HOST_NAME  }}
         AWS_EC2_USER : ${{ secrets.AWS_EC2_USER  }}
@@ -30,7 +31,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2 
-      - name: Deploy in EC2  
+      - name: Deploy and Run Application Service  
         run: |
             cd /app/govtech_devops_2022
             git checkout master
