@@ -19,3 +19,9 @@
 [submodule "infra/modules/terraform-aws-security-group"]
 	path = infra/modules/terraform-aws-security-group
 	url = https://github.com/cloudposse/terraform-aws-security-group
+[submodule "infra/modules/terraform-aws-nlb"]
+	path = infra/modules/terraform-aws-nlb
+	url = https://github.com/cloudposse/terraform-aws-nlb
+[submodule "infra/modules/terraform-aws-alb"]
+	path = infra/modules/terraform-aws-alb
+	url = https://github.com/cloudposse/terraform-aws-alb
