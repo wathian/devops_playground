@@ -2,7 +2,18 @@
 
 set -euxo pipefail
 
-cd /app/govtech_devops_2022
+DIR=/app/govtech_devops_2022
+BRANCH=main
+
+eval `ssh-agent`
+ssh-add ~/.ssh/gh.wathian.rsa2.pem
+
+if [ ! -d "$DIR" ]; then
+    git clone https://github.com/wathian/govtech_devops_2022.git $DIR
+fi
+cd $DIR
+git pull
+git checkout $BRANCH
 
 sudo systemctl is-active symbiosis-app.service
 if [ $? -gt 0] ; then
