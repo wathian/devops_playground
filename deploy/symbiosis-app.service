@@ -1,0 +1,12 @@
+[Unit]
+Description=wathian NodeJS Application
+After=network.target
+
+[Service]
+Restart=always
+User=ec2-user
+WorkingDirectory=/app/govtech_devops_2022/
+ExecStart=/home/ec2-user/.nvm/versions/node/v16.2.0/bin/node app.js
+
+[Install]
+WantedBy=multi-user.target
