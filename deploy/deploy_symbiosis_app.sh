@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -ux
 
 DIR=/app/govtech_devops_2022
 BRANCH=main
