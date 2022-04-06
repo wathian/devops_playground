@@ -3,37 +3,66 @@ name: Symbiosis Application Deployment
 on: 
   workflow_dispatch: 
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
 
 jobs:
-# First we will see the application build or not , then we will deploy in EC2
-  ssh_ec2:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    - name: SSH into EC2 Instance
-      env: 
-        AWS_EC2_HOST_NAME: ${{ secrets.AWS_EC2_HOST_NAME  }}
-        AWS_EC2_USER : ${{ secrets.AWS_EC2_USER  }}
-        AWS_EC2_PRIVATE_KEY : ${{ secrets.AWS_EC2_PRIVATE_KEY  }}
-      run: |
-        curl ipinfo.io/ip
-        echo "$AWS_EC2_PRIVATE_KEY" > private_key
-        chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ${AWS_EC2_USER}@${AWS_EC2_HOST_NAME}
-      
-  deploy_nodejs:
-    needs: ssh_ec2
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v2 
-      - name: Deploy and Run Application Service  
+  deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@v3
+        with:
+          clean: false
+      - name: Deploy and Run Application Service
+        env: 
+            AWS_EC2_PRIVATE_KEY : ${{ secrets.AWS_EC2_PRIVATE_KEY  }}
+            AWS_EC2_HOST_NAME: ${{ secrets.AWS_EC2_HOST_NAME  }}
+            AWS_EC2_USER : ${{ secrets.AWS_EC2_USER  }}
         run: |
-            cd /app/govtech_devops_2022
-            git checkout master
-            git pull origin master
-            touch hello.world 
+          echo "Agent's Hostname: $(hostname)"
+          echo "Agent's IP: $(curl ipinfo.io/ip)"
+          echo "Working Directory: $(pwd)"
+          echo "$AWS_EC2_PRIVATE_KEY" > pkey
+          chmod 600 pkey
+          ls -al
+          ssh -o StrictHostKeyChecking=no -i pkey ${AWS_EC2_USER}@${AWS_EC2_HOST_NAME} < deploy/./deploy_symbiosis_app.sh
+# First we will see the application build or not , then we will deploy in EC2
+#   init:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+#       with:
+#         clean: false
+#     - name: Initilizes Agent Properties
+#       run: |
+#         echo "Agent's Hostname: $(hostname)"
+#         echo "Agent's IP: $(curl ipinfo.io/ip)"
+#         echo "Working Directory: $(pwd)"
+#   setup_agent_ssh:
+#     needs: init
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#     - name: Setup Agent SSH
+#       env: 
+#         AWS_EC2_PRIVATE_KEY : ${{ secrets.AWS_EC2_PRIVATE_KEY  }}
+#       run: |
+#         echo "$AWS_EC2_PRIVATE_KEY" > pkey
+#         chmod 600 pkey
+#         ls -al pkey
+      
+#   deploy_nodejs:
+#     needs: setup_agent_ssh
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#       - name: Deploy and Run Application Service  
+#         env: 
+#           AWS_EC2_HOST_NAME: ${{ secrets.AWS_EC2_HOST_NAME  }}
+#           AWS_EC2_USER : ${{ secrets.AWS_EC2_USER  }}
+#         run: |
+#             ls -al
+#             ssh -o StrictHostKeyChecking=no -i pkey ${AWS_EC2_USER}@${AWS_EC2_HOST_NAME} < deploy/./_test_run.sh
