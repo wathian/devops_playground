@@ -51,7 +51,7 @@ echo "[NEW] Tag: $NEW_TAG"
 ##### Merge Git Tag #####
 
 ##### Push Git Tag #####
-git tag $NEW_TAG HEAD
+git tag -f $NEW_TAG HEAD
 git push origin $NEW_TAG
 
 ##### Start Symbiosis Application #####
