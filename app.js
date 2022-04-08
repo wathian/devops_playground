@@ -39,6 +39,7 @@ app.set('view engine', 'ejs')
  */ 
 var index = require('./routes/index')
 var users = require('./routes/users')
+var api = require('./routes/api')
 
 
 /**
@@ -108,6 +109,7 @@ app.use(flash())
 
 app.use('/', index)
 app.use('/users', users)
+app.use('/api', api)
 
 var host = config.server.host
 var port = config.server.port
