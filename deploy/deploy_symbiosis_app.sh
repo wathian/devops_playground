@@ -55,7 +55,7 @@ git tag -f $NEW_TAG HEAD
 git push origin $NEW_TAG
 
 ##### Start Symbiosis Application #####
-unset -e
+unset +e
 APP_STATUS=$(sudo systemctl is-active symbiosis-app.service)
 if [ $APP_STATUS == "active" ] ; then
     sudo systemctl stop symbiosis-app.service
