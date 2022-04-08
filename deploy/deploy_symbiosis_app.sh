@@ -54,6 +54,10 @@ echo "[NEW] Tag: $NEW_TAG"
 git tag -f $NEW_TAG HEAD
 git push origin $NEW_TAG
 
+##### Prepare Symbiosis Application #####
+rm -rf node_modules/
+npm install
+
 ##### Start Symbiosis Application #####
 set +e
 APP_STATUS=$(sudo systemctl is-active symbiosis-app.service)
