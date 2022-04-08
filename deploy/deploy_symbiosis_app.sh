@@ -55,15 +55,15 @@ git tag -f $NEW_TAG HEAD
 git push origin $NEW_TAG
 
 ##### Start Symbiosis Application #####
-# sudo systemctl is-active symbiosis-app.service
-# if [ $? -gt 0 ] ; then
-#     sudo systemctl stop symbiosis-app.service
-# fi
+sudo systemctl is-active symbiosis-app.service
+if [ $? -gt 0 ] ; then
+    sudo systemctl stop symbiosis-app.service
+fi
 
-# sudo systemctl enable symbiosis-app.service
-# sudo systemctl daemon-reload
-# sudo systemctl start symbiosis-app.service
-# sudo systemctl status symbiosis-app.service
+sudo systemctl enable symbiosis-app.service
+sudo systemctl daemon-reload
+sudo systemctl start symbiosis-app.service
+sudo systemctl status symbiosis-app.service
 # Useful
 # sudo systemctl stop symbiosis-app.service
 # Returns 0 (active) | >0 (inactive)
