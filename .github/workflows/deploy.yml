@@ -3,9 +3,9 @@ name: Symbiosis Application Deployment
 on: 
   workflow_dispatch: 
   push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
+    branches: [ uat ]
+  # pull_request:
+  #   branches: [ uat ]
 
 jobs:
   deploy:
@@ -13,8 +13,8 @@ jobs:
 
       steps:
       - uses: actions/checkout@v3
-        with:
-          clean: false
+        # with:
+        #   clean: false
       - name: Deploy and Run Application Service
         env: 
             AWS_EC2_PRIVATE_KEY : ${{ secrets.AWS_EC2_PRIVATE_KEY  }}
@@ -28,7 +28,6 @@ jobs:
           chmod 600 pkey
           ls -al
           ssh -o StrictHostKeyChecking=no -i pkey ${AWS_EC2_USER}@${AWS_EC2_HOST_NAME} < deploy/./deploy_symbiosis_app.sh
-# First we will see the application build or not , then we will deploy in EC2
 #   init:
 #     runs-on: ubuntu-latest
 

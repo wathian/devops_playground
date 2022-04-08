@@ -1,31 +1,69 @@
 #!/bin/bash
 
-set -ux
-
-DIR=/app/govtech_devops_2022
-BRANCH=main
+set -eux
 
 eval `ssh-agent`
 ssh-add ~/.ssh/gh.wathian.rsa2.pem
 
+##### Prepare Git Repository #####
+USERNAME=github_actionbot
+REPO=git@github.com:wathian/devops_playground.git
+DIR=/app/govtech_devops_2022
+BRANCH=uat
+
 if [ ! -d "$DIR" ]; then
-    git clone https://github.com/wathian/govtech_devops_2022.git $DIR
+    git clone $REPO $DIR
 fi
 cd $DIR
-git pull
-git checkout $BRANCH
+git config --global user.name "$USERNAME"
+git remote set-url origin $REPO
+git remote -v
+git fetch --all
 
-sudo systemctl is-active symbiosis-app.service
-if [ $? -gt 0] ; then
-    sudo systemctl stop symbiosis-app.service
+LOCAL_BRANCH_EXIST=$(git branch --list $BRANCH)
+REMOTE_BRANCH_EXIST=$(git branch --list -r origin/$BRANCH)
+if [[ $LOCAL_BRANCH_EXIST != "" ]]; then 
+    # check existance of local branch
+    git checkout $BRANCH
+else
+    # if don't have, create one locally
+    git checkout -b $BRANCH
 fi
-# sudo cp deploy/symbiosis-app.service /etc/systemd/system
-# chown ec2-user /etc/systemd/system/symbiosis-app.service
-# chmod u+x /etc/systemd/system/symbiosis-app.service
-sudo systemctl enable symbiosis-app.service
-sudo systemctl daemon-reload
-sudo systemctl start symbiosis-app.service
-sudo systemctl status symbiosis-app.service
+
+if [[ $REMOTE_BRANCH_EXIST == "" ]]; then
+    # create remote branch if don't have
+    git push origin -u $BRANCH
+else
+    # else set local branch to track upstream
+    git branch --set-upstream-to=origin/$BRANCH $BRANCH
+fi
+
+# Consideration: allow direct push to uat but might introduce conflict
+git pull origin $BRANCH
+
+##### Prepare Version & Git Tag #####
+# Format: v1.2.3
+CURRENT_TAG=$(git ls-remote --tags --sort=-v:refname | head -n 1 | awk -F/ '{print $3}')
+echo "[CURRENT] Tag: $CURRENT_TAG"
+NEW_TAG=$(echo $CURRENT_TAG | awk -F. '{OFS="."; gsub("v", ""); $3+=1; print "v"$0}')
+echo "[NEW] Tag: $NEW_TAG"
+
+##### Merge Git Tag #####
+
+##### Push Git Tag #####
+git tag -f $NEW_TAG HEAD
+git push origin $NEW_TAG
+
+##### Start Symbiosis Application #####
+# sudo systemctl is-active symbiosis-app.service
+# if [ $? -gt 0 ] ; then
+#     sudo systemctl stop symbiosis-app.service
+# fi
+
+# sudo systemctl enable symbiosis-app.service
+# sudo systemctl daemon-reload
+# sudo systemctl start symbiosis-app.service
+# sudo systemctl status symbiosis-app.service
 # Useful
 # sudo systemctl stop symbiosis-app.service
 # Returns 0 (active) | >0 (inactive)
