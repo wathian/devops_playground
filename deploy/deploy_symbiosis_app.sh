@@ -6,7 +6,8 @@ eval `ssh-agent`
 ssh-add ~/.ssh/gh.wathian.rsa2.pem
 
 ##### Prepare Git Repository #####
-USERNAME=github_actionbot
+USERNAME=wathian_github_action
+EMAIL=wathian_github_action
 REPO=git@github.com:wathian/devops_playground.git
 DIR=/app/govtech_devops_2022
 BRANCH=uat
@@ -16,6 +17,7 @@ if [ ! -d "$DIR" ]; then
 fi
 cd $DIR
 git config --global user.name "$USERNAME"
+git config --global user.email "$EMAIL"
 git remote set-url origin $REPO
 git remote -v
 git fetch --all
@@ -65,6 +67,7 @@ if [ $APP_STATUS == "active" ] ; then
     sudo systemctl stop symbiosis-app.service
 fi
 
+sudo systemctl import-environment ENV=$BRANCH
 sudo systemctl enable symbiosis-app.service
 sudo systemctl daemon-reload
 sudo systemctl start symbiosis-app.service

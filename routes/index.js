@@ -3,7 +3,7 @@ var app = express()
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
-	res.render('index', {title: 'wathian\'s NodeJs Application'})
+	res.render('index', {title: 'Welcome to @wathian\'s Playground!'})
 })
 
 /** 
