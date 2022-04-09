@@ -1,6 +1,5 @@
 var config = {
 	database: {
-		// host:	  'symbiosis-dev-rds.convcoagflye.ap-southeast-1.rds.amazonaws.com', 	// database host
 		host:	  'localhost', 	// database host
 		user: 	  'root', 		// your database username
 		password: 'rootingforu', 		// your database password

@@ -12,7 +12,8 @@ var myConnection  = require('express-myconnection')
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
  */ 
-var config = require('./config')
+var env = (process.env.ENV || 'dev').toLowerCase()
+var config = require(`./configs/${env}`)
 var dbOptions = {
 	host:	  config.database.host,
 	user: 	  config.database.user,
