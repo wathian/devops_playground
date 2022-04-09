@@ -76,10 +76,16 @@ sudo systemctl daemon-reload
 sudo systemctl start symbiosis-app.service
 sudo systemctl status symbiosis-app.service
 
-##### Symbiosis Application Healthcheck #####
-APP_API_STATUS=$(curl --get --silent --header "Authorization: Basic dGVzdDp0ZXN0MTIz" http://127.0.0.1:3000/api | jq .status)
-if [[ $APP_API_STATUS -eq 10000 ]]; then
-    exit 0
-else
-    exit 1
-fi 
+##### Symbiosis Application/API Healthcheck #####
+TIMEOUT=5
+for i in {1..$TIMEOUT}; do
+    APP_API_STATUS=$(curl --get --silent --header "Authorization: Basic dGVzdDp0ZXN0MTIz" http://127.0.0.1:3000/api | jq .status)
+    if [[ $APP_API_STATUS -eq 10000 ]]; then
+        exit 0
+    else
+        if [[ $i -eq $TIMEOUT]]; then
+            exit 1
+        fi
+        sleep $i
+    fi 
+done
