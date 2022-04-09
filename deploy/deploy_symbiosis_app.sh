@@ -21,6 +21,7 @@ git config --global user.email "$EMAIL"
 git remote set-url origin $REPO
 git remote -v
 git fetch --all
+git checkout .
 
 LOCAL_BRANCH_EXIST=$(git branch --list $BRANCH)
 REMOTE_BRANCH_EXIST=$(git branch --list -r origin/$BRANCH)
@@ -40,7 +41,7 @@ else
     git branch --set-upstream-to=origin/$BRANCH $BRANCH
 fi
 
-# Consideration: allow direct push to uat but might introduce conflict
+# To allow direct push to uat but might introduce conflict
 git pull origin $BRANCH
 
 ##### Prepare Version & Git Tag #####
@@ -63,11 +64,13 @@ npm install
 ##### Start Symbiosis Application #####
 set +e
 APP_STATUS=$(sudo systemctl is-active symbiosis-app.service)
+set -e
 if [ $APP_STATUS == "active" ] ; then
     sudo systemctl stop symbiosis-app.service
 fi
 
-sudo systemctl import-environment ENV=$BRANCH
+sudo systemctl set-environment ENV=$BRANCH
+sudo systemctl import-environment ENV
 sudo systemctl enable symbiosis-app.service
 sudo systemctl daemon-reload
 sudo systemctl start symbiosis-app.service
