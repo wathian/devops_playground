@@ -20,8 +20,10 @@ app.get('/', function(req, res, next) {
 				res.status(500)
 				res.end()
 			} else {
-                res.status(404)
-                res.end()
+                res.json({
+                    status: 10000,
+					description: "Symbiosis API Service Up!"
+				});
 			}
 		})
 	})

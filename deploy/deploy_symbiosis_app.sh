@@ -72,7 +72,11 @@ sudo systemctl enable symbiosis-app.service
 sudo systemctl daemon-reload
 sudo systemctl start symbiosis-app.service
 sudo systemctl status symbiosis-app.service
-# Useful
-# sudo systemctl stop symbiosis-app.service
-# Returns 0 (active) | >0 (inactive)
-# sudo systemctl is-active symbiosis-app.service
+
+##### Symbiosis Application Healthcheck #####
+APP_API_STATUS=$(curl --get --silent --header "Authorization: Basic dGVzdDp0ZXN0MTIz" http://127.0.0.1:3000/api | jq .status)
+if [[ $APP_API_STATUS -eq 10000 ]]; then
+    exit 0
+else
+    exit 1
+fi 
