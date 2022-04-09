@@ -83,7 +83,7 @@ for i in {1..$TIMEOUT}; do
     if [[ $APP_API_STATUS -eq 10000 ]]; then
         exit 0
     else
-        if [[ $i -eq $TIMEOUT]]; then
+        if [[ $i -eq $TIMEOUT ]]; then
             exit 1
         fi
         sleep $i
