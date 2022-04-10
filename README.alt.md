@@ -1,14 +1,33 @@
-# Node.js, Express & MySQL: Simple Add, Edit, Delete, View (CRUD)
-
-A CRUD application hosted in AWS EC2 provisioned via Terraform
+# A CRUD Application hosted in AWS EC2 with a simple CI/CD Deployment Pipeline
 
 ## Disclaimer
 
 Forked Repository: [chapagain/nodejs-mysql-crud](https://github.com/chapagain/nodejs-mysql-crud)
 
-Original Guide: [Node.js, Express & MySQL: Simple Add, Edit, Delete, View (CRUD)](http://blog.chapagain.com.np/node-js-express-mysql-simple-add-edit-delete-view-crud/)
+Original Guide: [Node.js, Express & MySQL: Simple Add, Edit, Delete, View (CRUD)](http://blog.chapagain.com.np/node-js-express-mysql-simple-add-edit-delete-view-crud/
 
-## Techstack
+## TODO
+
+1. Setup ALB (NLB not necessary) but be prepared to justify
+2. Improve semantic versioning logic to allow MAJOR/MINOR/PATCH
+3. Setup EC2 Autoscaling Group
+## Future Consideration
+
+1. Package all into docker image
+2. Run deploy script to pull the image and run as container
+3. EC2 can use docker, docker-compose to run the containerized environment
+4. Use K8/ECS for Orchastration
+
+## Security Concerns
+
+1. Config files contain credentials: To fetch as Github Secrets/AWS Secrets Manager/EC2 Parameter Store
+2. EC2 contains private key: to generate new ones and store as Deploy Keys PER repository as global ones can pull from ANY repository in this account
+3. EC2 is publicly available, publicly ssh-able: Limit access through IP Whitelist, Bastion/Jump Host, VPN, AWS Cognito, AWS Session Manager
+4. Insecure API calls using Basic Authenticaton: Use API Keys, JWT, OAuth OIDC
+
+## Architecture
+
+### Techstack
 
 | Front-End             | Back-End | Infrastructure |
 | --------------------- | -------- | -------------- |
@@ -17,7 +36,20 @@ Original Guide: [Node.js, Express & MySQL: Simple Add, Edit, Delete, View (CRUD)
 | EJS Templating Engine |          |                |
 |                       |          |                |
 
-## Pre-Requisite
+### CI/CD Pipeline
+
+![symbiosis_cicd](./diagram/symbiosis-cicd.drawio.png?raw=true)
+### Infrastructure (Current)
+
+![symbiosis_architecture](./diagram/symbiosis_infra_current.drawio.png?raw=true)
+
+### Infrastructure (Ideal)
+
+![symbiosis_architecture](./diagram/symbiosis_infra.drawio.png?raw=true)
+
+## Setup
+
+### Pre-Requisite
 
 ```
 # git
@@ -30,38 +62,6 @@ git clone https://github.com/wathian/govtech_devops_2022.git
 git submodule init
 git submodule update
 ```
-
-## Future Consideration
-
-1. Package all into docker image
-2. Run deploy script to pull the image and run as container
-3. EC2 can use docker, docker-compose to run the containerized environment
-
-## TODO
-
-1. Setup ALB (NLB not necessary) but be prepared to justify
-2. Use semantic versioning and git tagging to prepare for package promotion to next env
-3. Setup API endpoint w/ basic auth - can use this as indicator for (4)
-4. Write script to detect uptime after deployment
-5. Setup EC2 Autoscaling Group
-
-## Security Concerns
-
-1. Contains DB credentials: to isolate from db/dev.sql and store into Github Secrets/AWS Secrets Manager/EC2 Parameter Store
-2. EC2 contains Github Private Key: to generate new ones and store .pub as Deploy Keys PER repository rather than global ones which can pull from ANY repository of the account
-3. EC2 is publicly available, publicly ssh-able: IP Whitelist, Bastion/Jump Host, VPN, AWS Cognito, AWS SSM
-
-## Architecture
-
-### Current
-
-![symbiosis_architecture](./symbiosis_infra_current.drawio.png?raw=true)
-
-### Ideal
-
-![symbiosis_architecture](./symbiosis_infra.drawio.png?raw=true)
-
-## Setup
 
 ### Running NodeJS
 
@@ -146,6 +146,19 @@ chmod u+x db/dev.sql
 mysql -h localhost -u root -p < db/dev.sql 2>&1 | tee ./sql.log
 ```
 
+### API
+
+| Endpoints  | Authentication | Description              |
+| ---------- | -------------- | ------------------------ |
+| /api       | Basic          | Healthcheck              |
+| /api/users | Basic          | List all available users |
+
+> All API calls require Basic Authentication and can be set by passing in the Authorization headers
+
+```bash
+APP_API_STATUS=$(curl --get --silent --header "Authorization: Basic dGVzdDp0ZXN0MTIz" http://127.0.0.1:3000/api | jq .status)
+```
+
 ### Automate NodeJS Service
 
 ```
@@ -158,7 +171,32 @@ sudo systemctl enable symbiosis-app.service
 sudo systemctl start symbiosis-app.service
 
 # Useful
+sudo systemctl set-environment ENV=uat
+sudo systemctl import-environment ENV
 sudo systemctl stop symbiosis-app.service
 # Returns 0 (active) | >0 (inactive)
 sudo systemctl is-active symbiosis-app.service
+```
+
+### NodeJS Healthcheck
+
+After starting of the NodeJS service, we will utilize an API endpoint to check whether it is stable.
+
+```bash
+END=6
+START=1
+while [[ $START -le $END ]]; do
+    APP_API_STATUS=$(curl --get --silent --header "Authorization: Basic dGVzdDp0ZXN0MTIz" http://127.0.0.1:3000/api | jq .status)
+    if [[ $APP_API_STATUS -eq 10000 ]]; then
+        sudo systemctl status symbiosis-app.service
+        exit 0
+    else
+        if [[ $START -eq $END ]]; then
+            sudo systemctl status symbiosis-app.service
+            exit 1
+        fi
+        sleep $START
+    fi
+    START=$(( $START + 1 ))
+done
 ```
