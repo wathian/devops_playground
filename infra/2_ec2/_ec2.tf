@@ -43,20 +43,20 @@ module "nodejs" {
     #   cidr_blocks = ["0.0.0.0/0"]
       cidr_blocks = ["220.255.65.0/24"]
     },
-    {
-      type        = "ingress"
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
-    {
-      type        = "ingress"
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
+    # {
+    #   type        = "ingress"
+    #   from_port   = 80
+    #   to_port     = 80
+    #   protocol    = "tcp"
+    #   cidr_blocks = ["0.0.0.0/0"]
+    # },
+    # {
+    #   type        = "ingress"
+    #   from_port   = 443
+    #   to_port     = 443
+    #   protocol    = "tcp"
+    #   cidr_blocks = ["0.0.0.0/0"]
+    # },
     {
       type        = "ingress"
       from_port   = 3000
