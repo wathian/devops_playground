@@ -10,6 +10,7 @@ USERNAME=wathian_github_action
 EMAIL=wathian_github_action
 REPO=git@github.com:wathian/devops_playground.git
 DIR=/app/govtech_devops_2022
+DIR_APP=$DIR/app
 BRANCH=uat
 
 if [ ! -d "$DIR" ]; then
@@ -58,6 +59,7 @@ git tag -f $NEW_TAG HEAD
 git push origin $NEW_TAG
 
 ##### Prepare Symbiosis Application #####
+cd $DIR_APP
 rm -rf node_modules/
 npm install
 
