@@ -76,7 +76,6 @@ sudo systemctl import-environment ENV
 sudo systemctl enable symbiosis-app.service
 sudo systemctl daemon-reload
 sudo systemctl start symbiosis-app.service
-sudo systemctl status symbiosis-app.service
 
 ##### Symbiosis Application/API Healthcheck #####
 END=6
@@ -84,9 +83,11 @@ START=1
 while [[ $START -le $END ]]; do
     APP_API_STATUS=$(curl --get --silent --header "Authorization: Basic dGVzdDp0ZXN0MTIz" http://127.0.0.1:3000/api | jq .status)
     if [[ $APP_API_STATUS -eq 10000 ]]; then
+        sudo systemctl status symbiosis-app.service
         exit 0
     else
         if [[ $START -eq $END ]]; then
+            sudo systemctl status symbiosis-app.service
             exit 1
         fi
         sleep $START
