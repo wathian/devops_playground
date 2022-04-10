@@ -4,6 +4,7 @@ on:
   workflow_dispatch: 
   push:
     branches: [ uat ]
+    paths: [ app/** ]
   # pull_request:
   #   branches: [ uat ]
 
